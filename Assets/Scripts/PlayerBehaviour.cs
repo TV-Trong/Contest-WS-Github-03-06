@@ -4,16 +4,48 @@ using UnityEngine.Scripting.APIUpdating;
 
 public class PlayerBehaviour : MonoBehaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-
-    }
+    public float speedmove = 1f;
+    public float jumpForce = 2f;
+    private Rigidbody2D rb;
+    public Transform groundCheck;
+    public float checkRadius = 0.2f;
+    public LayerMask groundLayer;
+    private bool isGrounded;
 
     // Update is called once per frame
     void Update()
     {
+        Map1();
+        Map2();
         Map3();
+    }
+
+    public void Map1()
+    {
+        if (SceneManager.GetActiveScene().name == "Map 1")
+        {
+            rb.linearVelocity = new Vector2(speedmove, rb.linearVelocity.y);
+            if (Input.GetMouseButtonDown(0) && isGrounded)
+            {
+                rb.linearVelocity = new Vector2(rb.linearVelocity.x, 0);
+                rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
+                isGrounded = false;
+            }
+        }
+    }
+
+    public void Map2()
+    {
+        if (SceneManager.GetActiveScene().name == "Map 2")
+        {
+            float x = Input.GetAxis("Horizontal");
+            rb.linearVelocity = new Vector2(x * speedmove, rb.linearVelocity.y);
+            isGrounded = Physics2D.OverlapCircle(groundCheck.position, checkRadius, groundLayer);
+            if (Input.GetButtonDown("Jump") && isGrounded)
+            {
+                rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
+            }
+        }
     }
 
     //Map 3:
@@ -37,9 +69,18 @@ public class PlayerBehaviour : MonoBehaviour
 
     void OnCollisionEnter2D(Collision2D collision)
     {
-        if (collision.gameObject.CompareTag("win"))
+        foreach (ContactPoint2D contact in collision.contacts)
         {
-            //some code
+            if (contact.normal.y > 0.5f)
+            {
+                isGrounded = true;
+                break;
+            }
         }
+    }
+
+    void OnCollisionExit2D(Collision2D collision)
+    {
+        isGrounded = false;
     }
 }
