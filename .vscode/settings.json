@@ -66,5 +66,5 @@
     "explorer.fileNesting.patterns": {
         "*.sln": "*.csproj",
     },
-    "dotnet.defaultSolution": "g.sln"
+    "dotnet.defaultSolution": "Contest-WS-Github-03-06.sln"
 }
